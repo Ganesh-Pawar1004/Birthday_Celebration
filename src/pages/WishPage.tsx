@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { db } from '../lib/db';
 import { Send } from 'lucide-react';
 import type { Celebration } from '../types';
 
 export function WishPage() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const [celebration, setCelebration] = useState<Celebration | null>(null);
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');

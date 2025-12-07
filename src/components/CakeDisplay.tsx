@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Candle } from './Candle';
 import confetti from 'canvas-confetti';
 // import { Howl } from 'howler';
@@ -34,7 +34,7 @@ export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayPr
         // blowSound.play();
     };
 
-    const handleCutSlice = (index: number) => {
+    const handleCutSlice = () => {
         if (candlesLit) return; // Must blow candles first
         if (slicesCut >= totalSlices) return;
 
@@ -84,7 +84,7 @@ export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayPr
              */}
                         <div
                             className="w-full h-full"
-                            onClick={() => handleCutSlice(slicesCut)}
+                            onClick={() => handleCutSlice()}
                         />
                     </div>
                 )}
