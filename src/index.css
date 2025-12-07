@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --font-handwriting: 'Pacifico', cursive;
+}
+
+body {
+  @apply antialiased text-gray-900 bg-gray-50;
+}
+
+@keyframes disco {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.party-bg {
+  background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff);
+  background-size: 400% 400%;
+  animation: disco 10s ease infinite;
+}
