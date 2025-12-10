@@ -30,8 +30,8 @@ export function Celebration() {
             loop: true,
             volume: 0.5,
             autoplay: true,
-            onloaderror: (id, err) => console.error('Audio Load Error:', err),
-            onplayerror: (id, err) => {
+            onloaderror: (_id, err) => console.error('Audio Load Error:', err),
+            onplayerror: (_id, err) => {
                 console.error('Audio Play Error:', err);
                 setIsPlaying(false);
                 soundRef.current?.once('unlock', () => {
