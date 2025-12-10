@@ -18,6 +18,9 @@ function App() {
         <Route path="/wish/:id" element={<WishPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <div className="fixed bottom-2 right-2 text-white/50 text-xs font-sans pointer-events-none z-50">
+        Made by Ganesh Pawar
+      </div>
     </BrowserRouter>
   );
 }

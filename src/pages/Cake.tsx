@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { db } from '../lib/db';
 import { CakeDisplay } from '../components/CakeDisplay';
 import { FloatingEmojis } from '../components/FloatingEmojis';
@@ -8,13 +8,14 @@ import type { Celebration } from '../types';
 export function Cake() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [celebration, setCelebration] = useState<Celebration | null>(null);
+    const location = useLocation();
+    const [celebration, setCelebration] = useState<Celebration | null>(location.state?.celebration || null);
 
     useEffect(() => {
-        if (id) {
+        if (id && !celebration) {
             db.get(id).then(setCelebration);
         }
-    }, [id]);
+    }, [id, celebration]);
 
     if (!celebration) {
         return (
@@ -38,7 +39,7 @@ export function Cake() {
                 <CakeDisplay
                     flavor={celebration.flavor}
                     recipientName={celebration.recipientName}
-                    onComplete={() => navigate(`/celebration/${id}`)}
+                    onComplete={() => navigate(`/celebration/${id}`, { state: { celebration } })}
                 />
             </div>
         </div>

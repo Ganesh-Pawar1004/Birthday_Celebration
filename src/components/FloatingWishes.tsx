@@ -9,7 +9,7 @@ interface FloatingWishesProps {
 
 export function FloatingWishes({ celebrationId }: FloatingWishesProps) {
     const [wishes, setWishes] = useState<Wish[]>([]);
-    const [visibleWishes, setVisibleWishes] = useState<Wish[]>([]);
+    const [visibleWishes, setVisibleWishes] = useState<{ wish: Wish; uniqueId: string }[]>([]);
 
     // Poll for new wishes
     useEffect(() => {
@@ -29,16 +29,21 @@ export function FloatingWishes({ celebrationId }: FloatingWishesProps) {
 
         let currentIndex = 0;
         const interval = setInterval(() => {
-            if (currentIndex < wishes.length) {
-                setVisibleWishes(prev => {
-                    // Keep only last 5 to avoid clutter
-                    const next = [...prev, wishes[currentIndex]];
-                    if (next.length > 5) next.shift();
-                    return next;
-                });
-                currentIndex = (currentIndex + 1) % wishes.length; // Loop through wishes
-            }
-        }, 3000);
+            setVisibleWishes(prev => {
+                // Create a unique ID for this specific instance of the wish
+                const newWishItem = {
+                    wish: wishes[currentIndex],
+                    uniqueId: `${wishes[currentIndex].id}-${Date.now()}`
+                };
+
+                // Keep only last 8 to avoid clutter, but allow them to finish animation
+                const next = [...prev, newWishItem];
+                if (next.length > 8) next.shift();
+                return next;
+            });
+
+            currentIndex = (currentIndex + 1) % wishes.length; // Loop through wishes
+        }, 2000); // Add a new wish every 2 seconds
 
         return () => clearInterval(interval);
     }, [wishes]);
@@ -46,24 +51,30 @@ export function FloatingWishes({ celebrationId }: FloatingWishesProps) {
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
             <AnimatePresence>
-                {visibleWishes.map((wish) => (
+                {visibleWishes.map((item) => (
                     <motion.div
-                        key={`${wish.id}-${Date.now()}`} // Unique key for re-renders
+                        key={item.uniqueId} // Stable key for this instance
+                        // Start from bottom, random horizontal position (10% to 90%)
                         initial={{ y: '100vh', x: Math.random() * 80 + 10 + '%', opacity: 0, scale: 0.5 }}
                         animate={{
-                            y: '-20vh',
-                            opacity: [0, 1, 1, 0],
+                            y: '-20vh', // Float up off screen
+                            opacity: [0, 1, 1, 0], // Fade in, stay visible, fade out
                             scale: 1
                         }}
+                        exit={{ opacity: 0 }}
                         transition={{
-                            duration: 10,
+                            duration: 8, // Slightly faster for better flow
                             ease: "linear"
                         }}
-                        className="absolute bottom-0 max-w-xs"
+                        className="absolute bottom-0 left-0 w-full flex justify-start" // Container to allow x-positioning
+                        style={{ width: '100px' }} // Dummy width, actual position handled by motion
                     >
-                        <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-xl border border-pink-200 text-center transform -translate-x-1/2">
-                            <p className="text-gray-800 font-medium mb-1">"{wish.message}"</p>
-                            <p className="text-pink-600 text-sm font-bold">- {wish.name}</p>
+                        {/* Bubble Content */}
+                        <div className="relative -ml-[50%] bg-white/95 backdrop-blur-md p-6 rounded-full shadow-2xl border-2 border-pink-300 text-center min-w-[250px] max-w-sm">
+                            <p className="text-gray-900 font-handwriting text-xl mb-2 leading-tight">"{item.wish.message}"</p>
+                            <p className="text-pink-600 font-bold text-lg">- {item.wish.name}</p>
+
+                            {/* Little triangle for speech bubble look (optional, maybe just round is better for floating) */}
                         </div>
                     </motion.div>
                 ))}

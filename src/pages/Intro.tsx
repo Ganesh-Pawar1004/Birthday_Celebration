@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../lib/db';
 import { motion } from 'framer-motion';
 import { FloatingEmojis } from '../components/FloatingEmojis';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Share2, MessageCircleHeart } from 'lucide-react';
 import type { Celebration } from '../types';
 
 export function Intro() {
@@ -16,6 +16,18 @@ export function Intro() {
             db.get(id).then(setCelebration);
         }
     }, [id]);
+
+    const handleShare = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        alert('Link copied to clipboard! Share it with the birthday person!');
+    };
+
+    const handleShareWishLink = () => {
+        const url = window.location.href.replace('/intro/', '/wish/');
+        navigator.clipboard.writeText(url);
+        alert('Wish Link copied! Send this to friends to leave a message!');
+    };
 
     if (!celebration) {
         return (
@@ -61,11 +73,29 @@ export function Intro() {
                 transition={{ delay: 2, duration: 0.5 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate(`/cake/${id}`)}
+                onClick={() => navigate(`/cake/${id}`, { state: { celebration } })}
                 className="mt-16 z-10 bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-xl shadow-2xl flex items-center gap-2 hover:bg-gray-50 transition-colors"
             >
                 Let's Cut the Cake! <ArrowRight />
             </motion.button>
+
+            {/* Share Buttons */}
+            <div className="absolute bottom-8 left-8 z-20 flex flex-col gap-4">
+                <button
+                    onClick={handleShare}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium"
+                >
+                    <Share2 size={16} />
+                    Share Celebration
+                </button>
+                <button
+                    onClick={handleShareWishLink}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium"
+                >
+                    <MessageCircleHeart size={16} />
+                    Share Wish Link
+                </button>
+            </div>
         </div>
     );
 }

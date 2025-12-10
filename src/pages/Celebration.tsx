@@ -1,23 +1,50 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { db } from '../lib/db';
 import confetti from 'canvas-confetti';
-import { Share2, Music, Volume2, VolumeX, Home, MessageCircleHeart } from 'lucide-react';
+import { Music, Volume2, VolumeX, Home } from 'lucide-react';
 import { WishesWall } from '../components/WishesWall';
+import { Howl } from 'howler';
 import type { Celebration } from '../types';
 
 export function Celebration() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [celebration, setCelebration] = useState<Celebration | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const location = useLocation();
+    const [celebration, setCelebration] = useState<Celebration | null>(location.state?.celebration || null);
+    const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
+    const soundRef = useRef<Howl | null>(null);
 
     useEffect(() => {
-        if (id) {
+        if (id && !celebration) {
             db.get(id).then(setCelebration);
         }
-    }, [id]);
+    }, [id, celebration]);
+
+    useEffect(() => {
+        // Initialize sound
+        soundRef.current = new Howl({
+            src: ['/happy-birthday.mp3'],
+            html5: true, // Force HTML5 Audio for streaming large files
+            loop: true,
+            volume: 0.5,
+            autoplay: true,
+            onloaderror: (id, err) => console.error('Audio Load Error:', err),
+            onplayerror: (id, err) => {
+                console.error('Audio Play Error:', err);
+                setIsPlaying(false);
+                soundRef.current?.once('unlock', () => {
+                    soundRef.current?.play();
+                    setIsPlaying(true);
+                });
+            }
+        });
+
+        return () => {
+            soundRef.current?.unload();
+        };
+    }, []);
 
     useEffect(() => {
         if (celebration) {
@@ -44,24 +71,45 @@ export function Celebration() {
         }
     }, [celebration]);
 
-    const handleShare = () => {
-        const url = window.location.href.replace('/celebration/', '/intro/');
-        navigator.clipboard.writeText(url);
-        alert('Link copied to clipboard! Share it with the birthday person!');
+    const togglePlay = () => {
+        if (!soundRef.current) return;
+
+        if (isPlaying) {
+            soundRef.current.pause();
+        } else {
+            soundRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
     };
 
-    const handleShareWishLink = () => {
-        const url = window.location.href.replace('/celebration/', '/wish/');
-        navigator.clipboard.writeText(url);
-        alert('Wish Link copied! Send this to friends to leave a message!');
+    const toggleMute = () => {
+        if (!soundRef.current) return;
+
+        soundRef.current.mute(!isMuted);
+        setIsMuted(!isMuted);
     };
 
-    if (!celebration) return <div>Celebration not found</div>;
+    if (!celebration) {
+        return (
+            <div className="min-h-screen party-bg flex items-center justify-center text-white">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen party-bg flex flex-col items-center justify-start text-white overflow-y-auto relative p-4">
             {/* Overlay for readability */}
             <div className="fixed inset-0 bg-black/30 pointer-events-none"></div>
+
+            {/* Home Button */}
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-4 left-4 z-50 p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
+                title="Create New Celebration"
+            >
+                <Home size={24} />
+            </button>
 
             <div className="z-30 text-center max-w-2xl w-full mt-12">
                 <h1 className="text-6xl md:text-8xl font-handwriting mb-8 animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
@@ -72,52 +120,28 @@ export function Celebration() {
                     <h2 className="text-3xl font-bold mb-4 text-yellow-300">For {celebration.recipientName}</h2>
                     <p className="text-xl md:text-2xl italic leading-relaxed">"{celebration.message}"</p>
                 </div>
-
-                <div className="flex flex-wrap justify-center gap-4 mb-12">
-                    <button
-                        onClick={handleShare}
-                        className="flex items-center gap-2 px-6 py-3 bg-green-500 rounded-full font-bold hover:bg-green-600 transition-colors shadow-lg"
-                    >
-                        <Share2 size={20} />
-                        Share Celebration
-                    </button>
-
-                    <button
-                        onClick={handleShareWishLink}
-                        className="flex items-center gap-2 px-6 py-3 bg-pink-500 rounded-full font-bold hover:bg-pink-600 transition-colors shadow-lg"
-                    >
-                        <MessageCircleHeart size={20} />
-                        Share Wish Link
-                    </button>
-
-                    <button
-                        onClick={() => navigate('/')}
-                        className="flex items-center gap-2 px-6 py-3 bg-white/20 rounded-full font-bold hover:bg-white/30 transition-colors shadow-lg backdrop-blur-sm"
-                    >
-                        <Home size={20} />
-                        Create New
-                    </button>
-                </div>
             </div>
 
-            {/* Wishes Wall */}
+            {/* Wishes Display */}
             <div className="z-30 w-full mb-24">
                 {id && <WishesWall celebrationId={id} />}
             </div>
 
-            {/* Audio Controls (Mock) */}
+            {/* Controls */}
             <div className="fixed bottom-8 right-8 flex gap-2 z-50">
                 <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md"
+                    onClick={togglePlay}
+                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    title={isPlaying ? "Pause Music" : "Play Music"}
                 >
-                    <Music size={24} className={isPlaying ? "animate-spin" : ""} />
+                    <Music size={24} className={isPlaying ? "animate-spin text-green-400" : "text-white"} />
                 </button>
                 <button
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md"
+                    onClick={toggleMute}
+                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    title={isMuted ? "Unmute" : "Mute"}
                 >
-                    {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                    {isMuted ? <VolumeX size={24} className="text-red-400" /> : <Volume2 size={24} className="text-white" />}
                 </button>
             </div>
         </div>
