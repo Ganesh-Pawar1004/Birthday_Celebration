@@ -46,19 +46,19 @@ export function WishesWall({ celebrationId }: WishesWallProps) {
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: index * 0.1, type: "spring" }}
-                            className={`${color} p-6 shadow-lg transform hover:scale-105 transition-transform duration-300 relative`}
+                            className={`${color} p-6 shadow-[5px_5px_15px_rgba(0,0,0,0.2)] transform hover:scale-110 hover:shadow-[10px_10px_20px_rgba(0,0,0,0.3)] transition-all duration-300 relative`}
                             style={{
                                 rotate: `${rotation}deg`,
-                                clipPath: 'polygon(0% 0%, 100% 0%, 100% 90%, 95% 100%, 0% 100%)' // Subtle folded corner effect
+                                clipPath: 'polygon(0% 0%, 100% 0%, 100% 90%, 95% 100%, 0% 100%)'
                             }}
                         >
-                            {/* Pin effect */}
-                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-red-400 shadow-sm border border-red-500"></div>
+                            {/* Tape effect */}
+                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-8 h-4 bg-white/40 rotate-1 shadow-sm backdrop-blur-[1px]"></div>
 
-                            <p className="font-handwriting text-xl text-gray-800 mb-4 leading-relaxed">
+                            <p className="font-handwriting text-xl text-gray-800 mb-4 leading-relaxed tracking-wide">
                                 "{wish.message}"
                             </p>
-                            <p className="text-right font-bold text-gray-700 text-sm">
+                            <p className="text-right font-bold text-gray-700 text-sm font-sans tracking-wider opacity-80">
                                 - {wish.name}
                             </p>
                         </motion.div>

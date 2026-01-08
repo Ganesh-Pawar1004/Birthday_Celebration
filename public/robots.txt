@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://celebrate-virtual-birthday.netlify.app/sitemap.xml

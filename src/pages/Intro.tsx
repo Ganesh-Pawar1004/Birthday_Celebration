@@ -4,6 +4,8 @@ import { db } from '../lib/db';
 import { motion } from 'framer-motion';
 import { FloatingEmojis } from '../components/FloatingEmojis';
 import { ArrowRight, Share2, MessageCircleHeart } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { PartyLoader } from '../components/PartyLoader';
 import type { Celebration } from '../types';
 
 export function Intro() {
@@ -30,15 +32,16 @@ export function Intro() {
     };
 
     if (!celebration) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-            </div>
-        );
+        return <PartyLoader />;
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 flex flex-col items-center justify-center overflow-hidden relative p-4">
+            {celebration && (
+                <Helmet>
+                    <title>A special surprise for {celebration.recipientName}!</title>
+                </Helmet>
+            )}
             <FloatingEmojis />
 
             {/* Floating Name Animation */}
@@ -81,20 +84,24 @@ export function Intro() {
 
             {/* Share Buttons */}
             <div className="absolute bottom-8 left-8 z-20 flex flex-col gap-4">
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.05, x: 5 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleShare}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium shadow-lg"
                 >
                     <Share2 size={16} />
                     Share Celebration
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.05, x: 5 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleShareWishLink}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-white/20 text-white rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors text-sm font-medium shadow-lg"
                 >
                     <MessageCircleHeart size={16} />
                     Share Wish Link
-                </button>
+                </motion.button>
             </div>
         </div>
     );

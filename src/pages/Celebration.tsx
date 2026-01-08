@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { db } from '../lib/db';
 import confetti from 'canvas-confetti';
 import { Music, Volume2, VolumeX, Home } from 'lucide-react';
 import { WishesWall } from '../components/WishesWall';
+import { Helmet } from 'react-helmet-async';
+import { PartyLoader } from '../components/PartyLoader';
 import { Howl } from 'howler';
 import type { Celebration } from '../types';
 
@@ -90,26 +93,38 @@ export function Celebration() {
     };
 
     if (!celebration) {
-        return (
-            <div className="min-h-screen party-bg flex items-center justify-center text-white">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-            </div>
-        );
+        return <PartyLoader />;
     }
 
     return (
         <div className="min-h-screen party-bg flex flex-col items-center justify-start text-white overflow-y-auto relative p-4">
+            {celebration && (
+                <Helmet>
+                    <title>Happy Birthday {celebration.recipientName}! 🎈</title>
+                    <meta name="description" content={`Join the celebration for ${celebration.recipientName}! ${celebration.message}`} />
+
+                    {/* Dynamic Social Share Tags */}
+                    <meta property="og:title" content={`Happy Birthday ${celebration.recipientName}! 🎂`} />
+                    <meta property="og:description" content={`Someone sent specific wishes for ${celebration.recipientName}. Click to join the party, cut the cake, and leave a wish!`} />
+                    <meta property="og:image" content="https://birthday-celebration-app.netlify.app/og-celebration.jpg" />
+
+                    <meta name="twitter:title" content={`Happy Birthday ${celebration.recipientName}! 🎂`} />
+                    <meta name="twitter:description" content={`Join the virtual party for ${celebration.recipientName}.`} />
+                </Helmet>
+            )}
             {/* Overlay for readability */}
             <div className="fixed inset-0 bg-black/30 pointer-events-none"></div>
 
             {/* Home Button */}
-            <button
+            <motion.button
+                whileHover={{ scale: 1.1, rotate: -10 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => navigate('/')}
                 className="absolute top-4 left-4 z-50 p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
                 title="Create New Celebration"
             >
                 <Home size={24} />
-            </button>
+            </motion.button>
 
             <div className="z-30 text-center max-w-2xl w-full mt-12">
                 <h1 className="text-6xl md:text-8xl font-handwriting mb-8 animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
@@ -129,20 +144,24 @@ export function Celebration() {
 
             {/* Controls */}
             <div className="fixed bottom-8 right-8 flex gap-2 z-50">
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={togglePlay}
-                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
                     title={isPlaying ? "Pause Music" : "Play Music"}
                 >
                     <Music size={24} className={isPlaying ? "animate-spin text-green-400" : "text-white"} />
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={toggleMute}
-                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-all hover:scale-110 active:scale-95"
+                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
                     title={isMuted ? "Unmute" : "Mute"}
                 >
                     {isMuted ? <VolumeX size={24} className="text-red-400" /> : <Volume2 size={24} className="text-white" />}
-                </button>
+                </motion.button>
             </div>
         </div>
     );

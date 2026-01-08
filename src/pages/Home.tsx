@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 import { db } from '../lib/db';
 import type { CelebrationFormData } from '../types';
 import { CakeDisplay } from '../components/CakeDisplay';
@@ -20,6 +22,13 @@ export function Home() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-pink-100 to-purple-100 flex flex-col md:flex-row items-center justify-center p-4 gap-8">
+            <Helmet>
+                <title>Create Virtual Birthday Celebration | Free Online Card & Cake</title>
+                <meta name="description" content="Create a personalized virtual birthday celebration with interactive 3D cake, confetti, and wishes. Share the link instantly!" />
+                <meta property="og:title" content="Create a Virtual Birthday Surprise! 🎂" />
+                <meta property="og:description" content="Design a custom 3D birthday experience for your loved ones in seconds. It's free and magical!" />
+                <meta property="og:url" content="https://birthday-celebration-app.netlify.app/" />
+            </Helmet>
             <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full z-10">
                 <h1 className="text-3xl font-bold text-center mb-6 text-purple-600 font-handwriting">Virtual Birthday</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -57,12 +66,14 @@ export function Home() {
                             <option value="red-velvet">Red Velvet</option>
                         </select>
                     </div>
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         type="submit"
-                        className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                        className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-lg"
                     >
                         Start Celebration
-                    </button>
+                    </motion.button>
                 </form>
             </div>
 
