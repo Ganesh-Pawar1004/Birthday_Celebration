@@ -45,7 +45,7 @@ export function Cake() {
                 </h1>
 
                 {isBabyShower && (
-                    <p className="text-xl text-teal-100 mb-8 text-center max-w-2xl px-4 italic">
+                    <p className="text-sm md:text-xl text-teal-100 mb-4 md:mb-6 text-center max-w-2xl px-4 italic">
                         Let’s pause, smile, and celebrate this beautiful milestone together 🎉 <br />
                         A new chapter begins, filled with love, joy, and tiny little moments.
                     </p>

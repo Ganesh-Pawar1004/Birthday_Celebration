@@ -56,7 +56,7 @@ export function CakeDisplay({ flavor, recipientName, onComplete, eventType = 'bi
     };
 
     return (
-        <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
+        <div className="relative w-full max-w-md flex flex-col items-center justify-center pt-8">
             {/* Cake Base */}
             <div className="relative w-64 h-32">
                 {/* Candles Container */}
@@ -101,8 +101,8 @@ export function CakeDisplay({ flavor, recipientName, onComplete, eventType = 'bi
                 )}
             </div>
 
-            {/* Controls */}
-            <div className="absolute -bottom-24 w-full flex justify-center">
+            {/* Controls (Moved from absolute to relative normal flow) */}
+            <div className="w-full flex justify-center mt-12 md:mt-16 z-20">
                 {candlesLit ? (
                     <button
                         onClick={handleBlowCandles}
@@ -111,12 +111,12 @@ export function CakeDisplay({ flavor, recipientName, onComplete, eventType = 'bi
                         {isBabyShower ? "🎉 Celebrate Together" : "Blow Candles 💨"}
                     </button>
                 ) : (
-                    <div className="text-center">
+                    <div className="text-center z-20 bg-black/20 backdrop-blur-sm px-6 py-3 rounded-2xl">
                         <p className="text-white text-lg mb-2 font-semibold drop-shadow-md">
                             {slicesCut < totalSlices ? "Click the cake to cut a slice! 🔪" :
                                 (isBabyShower ? "✨ Wishing you happiness, health, and endless little smiles! ✨" : "Yay! Cake for everyone! 🍰")}
                         </p>
-                        <div className="text-sm text-white/80">Slices: {slicesCut} / {totalSlices}</div>
+                        <div className="text-sm text-white/80 font-bold">Slices: {slicesCut} / {totalSlices}</div>
                     </div>
                 )}
             </div>
