@@ -27,3 +27,9 @@ body {
   background-size: 400% 400%;
   animation: disco 10s ease infinite;
 }
+
+.baby-shower-bg {
+  background: linear-gradient(270deg, #b2f5ea, #bee3f8, #e9d8fd, #fbb6ce, #fefcbf);
+  background-size: 400% 400%;
+  animation: disco 15s ease infinite;
+}

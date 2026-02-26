@@ -19,6 +19,8 @@ export function WishPage() {
 
     if (!celebration) return <div>Loading...</div>;
 
+    const isBabyShower = celebration.eventType === 'baby-shower';
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (id) {
@@ -36,9 +38,11 @@ export function WishPage() {
             <div className="min-h-screen bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
                     <h1 className="text-3xl font-bold text-purple-600 font-handwriting mb-4">Thank You!</h1>
-                    <p className="text-gray-600 mb-6">Your wish has been saved for {celebration.recipientName}.</p>
+                    <p className="text-gray-600 mb-6">
+                        {isBabyShower ? "✨ Your wishes have been added to this special memory!" : `Your wish has been saved for ${celebration.recipientName}.`}
+                    </p>
                     <div className="text-6xl mb-4">💌</div>
-                    <p className="text-sm text-gray-500">The birthday person will see your note during the celebration!</p>
+                    <p className="text-sm text-gray-500">The recipient will see your note during the celebration!</p>
                 </div>
             </div>
         );
@@ -47,8 +51,16 @@ export function WishPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-                <h1 className="text-3xl font-bold text-center mb-2 text-purple-600 font-handwriting">Send a Wish</h1>
-                <p className="text-center text-gray-600 mb-6">to {celebration.recipientName}</p>
+                <h1 className={`text-3xl font-bold text-center mb-2 font-handwriting ${isBabyShower ? 'text-teal-600' : 'text-purple-600'}`}>
+                    {isBabyShower ? "💖 Send Your Wishes & Blessings" : "Send a Wish"}
+                </h1>
+                {isBabyShower ? (
+                    <p className="text-center text-gray-600 mb-6 text-sm">
+                        Before you take this beautiful break to welcome your little one 👶, we want to fill your days with love, positivity, and heartfelt messages. Drop your wishes, memories, or a note to make this moment even more special.
+                    </p>
+                ) : (
+                    <p className="text-center text-gray-600 mb-6">to {celebration.recipientName}</p>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -77,7 +89,7 @@ export function WishPage() {
                         className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
                     >
                         <Send size={20} />
-                        Send Wish
+                        {isBabyShower ? "💌 Send Wishes" : "Send Wish"}
                     </button>
                 </form>
             </div>

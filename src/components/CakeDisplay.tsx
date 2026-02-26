@@ -11,12 +11,14 @@ interface CakeDisplayProps {
     flavor: string;
     recipientName: string;
     onComplete: () => void;
+    eventType?: 'birthday' | 'baby-shower';
 }
 
-export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayProps) {
+export function CakeDisplay({ flavor, recipientName, onComplete, eventType = 'birthday' }: CakeDisplayProps) {
     const [candlesLit, setCandlesLit] = useState(true);
     const [slicesCut, setSlicesCut] = useState(0);
     const totalSlices = 8;
+    const isBabyShower = eventType === 'baby-shower';
 
     const getFlavorColors = (flavor: string) => {
         switch (flavor) {
@@ -44,7 +46,8 @@ export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayPr
         confetti({
             particleCount: 20,
             spread: 30,
-            origin: { y: 0.6 }
+            origin: { y: 0.6 },
+            colors: isBabyShower ? ['#b2f5ea', '#bee3f8', '#e9d8fd', '#fbb6ce', '#fefcbf'] : undefined
         });
 
         if (slicesCut + 1 >= totalSlices) {
@@ -57,10 +60,18 @@ export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayPr
             {/* Cake Base */}
             <div className="relative w-64 h-32">
                 {/* Candles Container */}
-                <div className="absolute -top-16 left-0 w-full flex justify-center space-x-4 z-20">
-                    <Candle isLit={candlesLit} />
-                    <Candle isLit={candlesLit} />
-                    <Candle isLit={candlesLit} />
+                <div className="absolute -top-16 left-0 w-full flex justify-center space-x-4 z-20 items-end h-16">
+                    {isBabyShower ? (
+                        <div className={`text-2xl font-bold font-handwriting text-teal-600 bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full border-[3px] border-teal-200 shadow-md transform transition-all duration-700 ${!candlesLit ? 'scale-110 -translate-y-4 shadow-xl' : ''}`}>
+                            🍼 Oh Baby!
+                        </div>
+                    ) : (
+                        <>
+                            <Candle isLit={candlesLit} />
+                            <Candle isLit={candlesLit} />
+                            <Candle isLit={candlesLit} />
+                        </>
+                    )}
                 </div>
 
                 {/* Cake Top Surface */}
@@ -95,14 +106,15 @@ export function CakeDisplay({ flavor, recipientName, onComplete }: CakeDisplayPr
                 {candlesLit ? (
                     <button
                         onClick={handleBlowCandles}
-                        className="bg-blue-500 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:bg-blue-600 transition-transform hover:scale-105 active:scale-95"
+                        className={`text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg transition-transform hover:scale-105 active:scale-95 ${isBabyShower ? 'bg-teal-500 hover:bg-teal-600' : 'bg-blue-500 hover:bg-blue-600'}`}
                     >
-                        Blow Candles 💨
+                        {isBabyShower ? "🎉 Celebrate Together" : "Blow Candles 💨"}
                     </button>
                 ) : (
                     <div className="text-center">
                         <p className="text-white text-lg mb-2 font-semibold drop-shadow-md">
-                            {slicesCut < totalSlices ? "Click the cake to cut a slice! 🔪" : "Yay! Cake for everyone! 🍰"}
+                            {slicesCut < totalSlices ? "Click the cake to cut a slice! 🔪" :
+                                (isBabyShower ? "✨ Wishing you happiness, health, and endless little smiles! ✨" : "Yay! Cake for everyone! 🍰")}
                         </p>
                         <div className="text-sm text-white/80">Slices: {slicesCut} / {totalSlices}</div>
                     </div>

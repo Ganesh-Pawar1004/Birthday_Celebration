@@ -5,6 +5,7 @@ import { db } from '../lib/db';
 import confetti from 'canvas-confetti';
 import { Music, Volume2, VolumeX, Home } from 'lucide-react';
 import { WishesWall } from '../components/WishesWall';
+import { ImageCarousel } from '../components/ImageCarousel';
 import { Helmet } from 'react-helmet-async';
 import { PartyLoader } from '../components/PartyLoader';
 import { Howl } from 'howler';
@@ -27,8 +28,11 @@ export function Celebration() {
 
     useEffect(() => {
         // Initialize sound
+        const isBabyShower = celebration?.eventType === 'baby-shower';
+        const audioSrc = isBabyShower ? '/lullaby.mp3' : '/happy-birthday.mp3';
+
         soundRef.current = new Howl({
-            src: ['/happy-birthday.mp3'],
+            src: [audioSrc],
             html5: true, // Force HTML5 Audio for streaming large files
             loop: true,
             volume: 0.5,
@@ -96,19 +100,21 @@ export function Celebration() {
         return <PartyLoader />;
     }
 
+    const isBabyShower = celebration.eventType === 'baby-shower';
+
     return (
-        <div className="min-h-screen party-bg flex flex-col items-center justify-start text-white overflow-y-auto relative p-4">
+        <div className={`min-h-screen flex flex-col items-center justify-start text-white overflow-y-auto relative p-4 ${isBabyShower ? 'baby-shower-bg' : 'party-bg'}`}>
             {celebration && (
                 <Helmet>
-                    <title>Happy Birthday {celebration.recipientName}! 🎈</title>
+                    <title>{isBabyShower ? `Baby Shower for ${celebration.recipientName}!` : `Happy Birthday ${celebration.recipientName}! 🎈`}</title>
                     <meta name="description" content={`Join the celebration for ${celebration.recipientName}! ${celebration.message}`} />
 
                     {/* Dynamic Social Share Tags */}
-                    <meta property="og:title" content={`Happy Birthday ${celebration.recipientName}! 🎂`} />
-                    <meta property="og:description" content={`Someone sent specific wishes for ${celebration.recipientName}. Click to join the party, cut the cake, and leave a wish!`} />
-                    <meta property="og:image" content="https://birthday-celebration-app.netlify.app/og-celebration.jpg" />
+                    <meta property="og:title" content={isBabyShower ? `Virtual Baby Shower: Parents-To-Be ${celebration.recipientName} 🍼` : `Happy Birthday ${celebration.recipientName}! 🎂`} />
+                    <meta property="og:description" content={`Someone sent specific wishes for ${celebration.recipientName}. Click to join the party, see the cake, and leave a wish!`} />
+                    <meta property="og:image" content={isBabyShower ? "https://birthday-celebration-app.netlify.app/og-babyshower.jpg" : "https://birthday-celebration-app.netlify.app/og-celebration.jpg"} />
 
-                    <meta name="twitter:title" content={`Happy Birthday ${celebration.recipientName}! 🎂`} />
+                    <meta name="twitter:title" content={isBabyShower ? `Virtual Baby Shower: ${celebration.recipientName} 🍼` : `Happy Birthday ${celebration.recipientName}! 🎂`} />
                     <meta name="twitter:description" content={`Join the virtual party for ${celebration.recipientName}.`} />
                 </Helmet>
             )}
@@ -120,27 +126,58 @@ export function Celebration() {
                 whileHover={{ scale: 1.1, rotate: -10 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => navigate('/')}
-                className="absolute top-4 left-4 z-50 p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
+                className="fixed top-4 left-4 z-50 p-3 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md transition-colors shadow-lg"
                 title="Create New Celebration"
             >
                 <Home size={24} />
             </motion.button>
 
-            <div className="z-30 text-center max-w-2xl w-full mt-12">
-                <h1 className="text-6xl md:text-8xl font-handwriting mb-8 animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
-                    PARTY TIME!
+            {/* Display uploaded images as floating polaroids */}
+            {celebration.images && celebration.images.length > 0 && (
+                <ImageCarousel images={celebration.images} />
+            )}
+
+            <div className="z-30 text-center max-w-2xl w-full mt-32">
+                <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] ${isBabyShower ? 'text-teal-200' : 'font-handwriting text-5xl md:text-8xl'}`}>
+                    {isBabyShower ? "🌟 We'll Miss You, But We're So Happy for You!" : "PARTY TIME!"}
                 </h1>
 
-                <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 mb-8 border border-white/20 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                    <h2 className="text-3xl font-bold mb-4 text-yellow-300">For {celebration.recipientName}</h2>
-                    <p className="text-xl md:text-2xl italic leading-relaxed">"{celebration.message}"</p>
+                <div className="bg-white/20 backdrop-blur-md rounded-3xl p-8 mb-8 border border-white/20 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                    <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${isBabyShower ? 'text-indigo-200' : 'text-yellow-300'}`}>
+                        {isBabyShower ? `Sending love and wishes to ${celebration.recipientName}` : `For ${celebration.recipientName}`}
+                    </h2>
+                    <p className={`text-xl md:text-2xl italic leading-relaxed ${isBabyShower ? 'mb-6' : ''}`}>"{celebration.message}"</p>
+
+                    {isBabyShower && (
+                        <p className="text-lg md:text-xl text-teal-50 leading-relaxed font-medium">
+                            Your presence has brought so much positivity, energy, and warmth to our team 💼💖<br />
+                            As you step away for this wonderful journey, know that you carry our best wishes, support, and happiness with you.<br />
+                            We can’t wait to hear beautiful stories when you return 👶✨
+                        </p>
+                    )}
                 </div>
             </div>
 
             {/* Wishes Display */}
-            <div className="z-30 w-full mb-24">
-                {id && <WishesWall celebrationId={id} />}
+            <div className="z-30 w-full mb-12">
+                {id && <WishesWall celebrationId={id} eventType={celebration.eventType} />}
             </div>
+
+            {/* Closing Message for Baby Shower */}
+            {isBabyShower && (
+                <div className="z-30 text-center max-w-2xl w-full mb-32 bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4 text-pink-200">
+                        💫 A New Chapter Begins…
+                    </h2>
+                    <p className="text-lg md:text-xl text-white mb-6">
+                        May your days be filled with laughter, tiny giggles, and unconditional love 💖<br />
+                        Wishing you both a safe, healthy, and joyful journey into parenthood.
+                    </p>
+                    <p className="text-2xl font-handwriting text-teal-200">
+                        ✨ With lots of love from your team ✨
+                    </p>
+                </div>
+            )}
 
             {/* Controls */}
             <div className="fixed bottom-8 right-8 flex gap-2 z-50">

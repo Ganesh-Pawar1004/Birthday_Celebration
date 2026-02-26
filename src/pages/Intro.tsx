@@ -35,11 +35,13 @@ export function Intro() {
         return <PartyLoader />;
     }
 
+    const isBabyShower = celebration?.eventType === 'baby-shower';
+
     return (
-        <div className="min-h-screen bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 flex flex-col items-center justify-center overflow-hidden relative p-4">
+        <div className={`min-h-screen flex flex-col items-center justify-center overflow-hidden relative p-4 ${isBabyShower ? 'bg-gradient-to-r from-teal-200 via-blue-100 to-indigo-200' : 'bg-gradient-to-r from-purple-600 via-pink-500 to-red-500'}`}>
             {celebration && (
                 <Helmet>
-                    <title>A special surprise for {celebration.recipientName}!</title>
+                    <title>{isBabyShower ? `A Baby Shower for ${celebration.recipientName}!` : `A special surprise for ${celebration.recipientName}!`}</title>
                 </Helmet>
             )}
             <FloatingEmojis />
@@ -51,8 +53,18 @@ export function Intro() {
                 transition={{ type: "spring", bounce: 0.5, duration: 1.5 }}
                 className="z-10 text-center"
             >
-                <h2 className="text-4xl md:text-5xl text-white font-bold mb-4 drop-shadow-lg">
-                    Happy Birthday
+                <h2 className={`text-3xl md:text-5xl font-bold mb-6 drop-shadow-lg text-center px-4 leading-tight flex flex-col items-center justify-center ${isBabyShower ? 'text-teal-700' : 'text-white'}`}>
+                    {isBabyShower ? (
+                        <>
+                            <span>✨ Celebrating a Beautiful New Beginning ✨</span>
+                            <span className="text-sm md:text-lg font-normal mt-4 max-w-2xl px-4 text-center block">
+                                As you step into one of the most special phases of life, we come together to celebrate, appreciate, and send our warmest wishes 💖<br />
+                                Your journey into parenthood begins here, and we’re so happy to be a part of it.
+                            </span>
+                        </>
+                    ) : (
+                        "Happy Birthday"
+                    )}
                 </h2>
                 <motion.h1
                     animate={{
@@ -64,7 +76,7 @@ export function Intro() {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="text-6xl md:text-9xl font-handwriting text-yellow-300 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]"
+                    className={`text-6xl md:text-9xl font-handwriting drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] ${isBabyShower ? 'text-indigo-500' : 'text-yellow-300'}`}
                 >
                     {celebration.recipientName}
                 </motion.h1>
@@ -77,9 +89,9 @@ export function Intro() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate(`/cake/${id}`, { state: { celebration } })}
-                className="mt-16 z-10 bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-xl shadow-2xl flex items-center gap-2 hover:bg-gray-50 transition-colors"
+                className={`mt-16 z-10 bg-white px-8 py-4 rounded-full font-bold text-xl shadow-2xl flex items-center gap-2 hover:bg-gray-50 transition-colors ${isBabyShower ? 'text-teal-600' : 'text-purple-600'}`}
             >
-                Let's Cut the Cake! <ArrowRight />
+                {isBabyShower ? "👉 Join the Celebration" : "Let's Cut the Cake!"} <ArrowRight />
             </motion.button>
 
             {/* Share Buttons */}

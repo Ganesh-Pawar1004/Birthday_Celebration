@@ -1,8 +1,12 @@
+export type EventType = 'birthday' | 'baby-shower';
+
 export interface Celebration {
     id: string;
+    eventType: EventType;
     recipientName: string;
     message: string;
     flavor: 'chocolate' | 'vanilla' | 'strawberry' | 'red-velvet';
+    images?: string[];
     createdAt: number;
 }
 
